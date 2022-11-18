@@ -1,0 +1,2 @@
+*.code-workspace
+auth/src/worker.wasm
