@@ -1,7 +1,7 @@
-# Minting
+# Proof-of-Concept for email-based authentication for NEAR
 
-near call nft12.testnet nft_mint '{"token_id": "2", "receiver_id":"nft12.testnet", "token_metadata": {"title": "First", "media":"https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Coat_of_arms_Holy_See.svg/1024px-Coat_of_arms_Holy_See.svg.png", "media_hash": "+NFsSD+PLuQhSZCfD9ECFLSLYFxLc/Mz8HTOs8hr3po=" } }' --accountId nft12.testnet --gas 24280886950500 --amount 0.01
+The goal of this repo is to show the Proof of concept of using the DKIM signatures (added by default to emails) as a way to authenticate transactions.
 
-near call nft12.testnet nft_mint '{"token_id": "5", "receiver_id":"nft12.testnet", "token_metadata": {"title": "Fifth", "media":"https://en.wikipedia.org/wiki/Padlock#/media/File:Gnome-mime-application-pgp.svg", "media_hash": "+NFsSD+PLuQhSZCfD9ECFLSLYFxLc/Mz8HTOs8hr3po=" } }' --accountId nft12.testnet --gas 24280886950500 --amount 0.01
+This would allow users to control their NEAR account via email - by setting the command that they would like to execute in the subject, and then sending the email to one of the recipients.
 
-
+Email would be signed by the sender's server (in current design, we only support gmail) - and this signature can be verified by the contract.
