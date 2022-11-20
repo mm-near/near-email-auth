@@ -35,7 +35,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
     println!("Nonce is {}", current_nonce);
 
-    let payload = include_bytes!("init.eml");
+    let payload = include_bytes!("add_key.eml");
     let payload = payload.to_vec();
 
     let transaction = Transaction {
@@ -47,7 +47,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         actions: vec![Action::FunctionCall(FunctionCallAction {
             method_name: "receive_email".to_string(),
             args: json!({ "full_email": payload }).to_string().into_bytes(),
-            gas: 100_000_000_000_000, // 100 TeraGas
+            gas: 300_000_000_000_000, // 100 TeraGas
             deposit: 0,
         })],
     };

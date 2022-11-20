@@ -14,12 +14,10 @@ near-sdk = "4.0.0"
 uint = { version = "0.9.3", default-features = false }
 mail-parser = "0.7.0"
 mailparse = "0.13.7"
-getrandom = { version = "0.2", features = ["js"] }
+getrandom = { version = "0.2", features = ["custom"] }
 
 cfdkim = { path = "../../dkim"}
 slog = "2.7.0"
-futures = "0.3.18"
-
 
 [profile.release]
 codegen-units = 1

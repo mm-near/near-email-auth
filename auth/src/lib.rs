@@ -1,16 +1,26 @@
 use mailparse::{addrparse_header, parse_mail, MailHeaderMap};
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
-use near_sdk::{env, near_bindgen, Balance, Gas, GasWeight, PanicOnDefault, Promise};
+use near_sdk::serde::Serialize;
+use near_sdk::{
+    env, near_bindgen, AccountId, Balance, Gas, GasWeight, PanicOnDefault, Promise, PublicKey,
+};
 use std::collections::HashMap;
 
 use cfdkim::verify_email_with_resolver;
+
+pub fn always_fail(_: &mut [u8]) -> Result<(), getrandom::Error> {
+    unimplemented!()
+}
+
+use getrandom::register_custom_getrandom;
+register_custom_getrandom!(always_fail);
 
 // Define the contract structure
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
 pub struct AuthManager {}
 
-const MIN_STORAGE: Balance = 11_100_000_000_000_000_000_000_000; //11.1Ⓝ
+const MIN_STORAGE: Balance = 14_200_000_000_000_000_000_000_000; //11.1Ⓝ
 const WORKER_CODE: &[u8] = include_bytes!("worker.wasm");
 
 #[derive(Debug, PartialEq)]
@@ -19,6 +29,18 @@ pub enum CommandEnum {
     AddKey(String),
     DeleteKey,
     Transfer,
+}
+
+#[derive(Serialize)]
+#[serde(crate = "near_sdk::serde")]
+struct AddKeyArgs {
+    public_key: PublicKey,
+}
+
+#[derive(Serialize)]
+#[serde(crate = "near_sdk::serde")]
+struct NewContractArgs {
+    owner_id: AccountId,
 }
 
 // Implement the contract structure
@@ -31,21 +53,33 @@ impl AuthManager {
 
     fn create_new_subaccount(prefix: String) {
         let account_id = prefix + "." + &env::current_account_id().to_string();
+        let create_args = near_sdk::serde_json::to_vec(&NewContractArgs {
+            owner_id: env::current_account_id(),
+        })
+        .unwrap();
+
         Promise::new(account_id.parse().unwrap())
             .create_account()
             .transfer(MIN_STORAGE)
-            .deploy_contract(WORKER_CODE.to_vec());
+            .deploy_contract(WORKER_CODE.to_vec())
+            .function_call(
+                "new_contract".to_owned(),
+                create_args,
+                0,
+                Gas(200_000_000_000_000),
+            );
     }
 
     fn add_key(prefix: String, key: String) {
         let account_id = prefix + "." + &env::current_account_id().to_string();
+        let public_key: PublicKey = key.parse().unwrap();
+        let add_key_args = near_sdk::serde_json::to_vec(&AddKeyArgs { public_key }).unwrap();
+
         Promise::new(account_id.parse().unwrap()).function_call_weight(
             "add_key".to_owned(),
-            format!("{{\"public_key\": \"{}\"}}", key)
-                .try_to_vec()
-                .unwrap(),
+            add_key_args,
             0,
-            Gas(1000_000),
+            Gas(200_000_000_000_000),
             GasWeight(1),
         );
     }
@@ -124,7 +158,7 @@ impl AuthManager {
                 'a'..='z' => x,
                 'A'..='Z' => x,
                 '0'..='9' => x,
-                '@' => x,
+                '@' => '_',
                 '.' => '_',
                 '_' => x,
                 '-' => x,
@@ -136,7 +170,9 @@ impl AuthManager {
     pub fn receive_email(full_email: Vec<u8>) {
         // verify email
         let (sender, header) = AuthManager::verify_email(full_email);
+        env::log_str(format!("Email verified: {}", sender).as_str());
         let prefix = AuthManager::sender_to_account(sender);
+        env::log_str(format!("Account prefix is: {}", prefix).as_str());
         let cmd = AuthManager::parse_command(header);
         match cmd {
             CommandEnum::Init => AuthManager::create_new_subaccount(prefix),
@@ -165,7 +201,7 @@ mod tests {
         );
         assert_eq!(
             AuthManager::parse_command(
-                "add_key     ed25519:3tXAA9zf5YSLxYELSbxwhEvMd7h9itTfCcUfEc3QfPgD 
+                "add_key     ed25519:3tXAA9zf5YSLxYELSbxwhEvMd7h9itTfCcUfEc3QfPgD
                 \n"
                 .to_owned()
             ),
