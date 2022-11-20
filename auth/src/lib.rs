@@ -218,6 +218,13 @@ mod tests {
                 "Another message".to_owned()
             )
         );
+        assert_eq!(
+            AuthManager::verify_email(include_bytes!("empty_email.eml").to_vec()),
+            (
+                "example.near@gmail.com".to_owned(),
+                "Empty email".to_owned()
+            )
+        );
     }
     #[test]
     #[should_panic]
