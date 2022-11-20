@@ -132,6 +132,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // CHANGE.
     let mut min_value = 0;
+    let (value, _) =
+        fetch_inbox_from(min_value, imap_username.as_str(), imap_password.as_str()).unwrap();
+    min_value = value;
+    println!("Already {} email present - ignoring.", min_value);
 
     loop {
         let (value, mails) =

@@ -3,6 +3,7 @@ use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::serde::Serialize;
 use near_sdk::{
     env, near_bindgen, AccountId, Balance, Gas, GasWeight, PanicOnDefault, Promise, PublicKey,
+    ONE_NEAR,
 };
 use std::collections::HashMap;
 
@@ -28,13 +29,20 @@ pub enum CommandEnum {
     Init,
     AddKey(String),
     DeleteKey,
-    Transfer,
+    Transfer(AccountId, Balance),
 }
 
 #[derive(Serialize)]
 #[serde(crate = "near_sdk::serde")]
 struct AddKeyArgs {
     public_key: PublicKey,
+}
+
+#[derive(Serialize)]
+#[serde(crate = "near_sdk::serde")]
+struct TransferArgs {
+    to: AccountId,
+    amount: Balance,
 }
 
 #[derive(Serialize)]
@@ -84,6 +92,18 @@ impl AuthManager {
         );
     }
 
+    fn transfer(prefix: String, to: AccountId, amount: Balance) {
+        let account_id = prefix + "." + &env::current_account_id().to_string();
+        let transfer_args = near_sdk::serde_json::to_vec(&TransferArgs { to, amount }).unwrap();
+
+        Promise::new(account_id.parse().unwrap()).function_call_weight(
+            "transfer".to_owned(),
+            transfer_args,
+            0,
+            Gas(200_000_000_000_000),
+            GasWeight(1),
+        );
+    }
     fn verify_email(full_email: Vec<u8>) -> (String, String) {
         let email = parse_mail(full_email.as_slice()).unwrap();
         let logger = &slog::Logger::root(slog::Discard, slog::o!());
@@ -146,7 +166,18 @@ impl AuthManager {
         }
 
         if header.starts_with("transfer") {
-            return CommandEnum::Transfer;
+            let data: Vec<&str> = header.split_whitespace().collect();
+            assert_eq!(3, data.len());
+            assert_eq!("transfer", data[0]);
+            //let amount: Balance = data[2].parse().unwrap();
+            let fraction: f64 = data[2].parse().unwrap();
+            assert!(fraction > 0.0);
+
+            let amount = ((fraction * 100.0) as u128) * (ONE_NEAR / 100);
+
+            let account: AccountId = data[1].parse().unwrap();
+
+            return CommandEnum::Transfer(account, amount);
         }
         panic!("Wrong header");
     }
@@ -177,6 +208,7 @@ impl AuthManager {
         match cmd {
             CommandEnum::Init => AuthManager::create_new_subaccount(prefix),
             CommandEnum::AddKey(key) => AuthManager::add_key(prefix, key),
+            CommandEnum::Transfer(to, amount) => AuthManager::transfer(prefix, to, amount),
             _ => todo!(),
         }
     }
@@ -206,6 +238,10 @@ mod tests {
                 .to_owned()
             ),
             CommandEnum::AddKey("ed25519:3tXAA9zf5YSLxYELSbxwhEvMd7h9itTfCcUfEc3QfPgD".to_owned())
+        );
+        assert_eq!(
+            AuthManager::parse_command("transfer foobar.near 134".to_owned()),
+            CommandEnum::Transfer("foobar.near".parse().unwrap(), 134 * ONE_NEAR)
         );
     }
 
