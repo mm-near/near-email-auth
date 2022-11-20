@@ -1,0 +1,84 @@
+Delivered-To: input.near@gmail.com
+Received: by 2002:a05:6a20:1398:b0:a6:966f:acf3 with SMTP id w24csp961841pzh;
+        Sat, 19 Nov 2022 09:28:04 -0800 (PST)
+X-Received: by 2002:a9d:7389:0:b0:66c:3574:112b with SMTP id j9-20020a9d7389000000b0066c3574112bmr6090747otk.385.1668878884863;
+        Sat, 19 Nov 2022 09:28:04 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1668878884; cv=none;
+        d=google.com; s=arc-20160816;
+        b=T+H7b+hLTUunF1+uo0couAH1wi+TDOXKtWzVS2JFe+OijKSxos/baAOGSR35a7hI+F
+         o5RUqLrCcMpVWBEgL4rG7zRoFFes6YmwPw+8VIISTFgQasDHfhOtckfK9eCY6gf94F7W
+         w+ZBiJ43tAE5GQvy24Csyc5WU/PqFvvqcKK3SzBfhJVL77oa/j4BvAXKyQ4wf7ZzpSZz
+         IjjsMRKhdPxAn8C/BKgMyY0Ovz+iaCOxOfwS1YG9WuFQn9Yg0zkYMyxpLhb8qJE4Egpn
+         IClyumv6eyKb2TmBxebTn72sYGhkhVNjiWL8WC5BYzEFWVNIxdaGGZ3DV4aFWnpE1BWx
+         gIPg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20160816;
+        h=to:subject:message-id:date:from:mime-version:dkim-signature;
+        bh=io1eaKCQauueQ2ntLEQEa8Q3OXFf2xolUrpFcdGdlj0=;
+        b=KdXKK+Dozrq3POGNeDX8vYuv4g+P80dnYz7HbMiY2meUpPsZyFlUOkOtq77EIC7qvr
+         MhvKKP4GN/IHL1f802zcS0bf5/7vjlJO2yy2Iagnrxu51xEsAf0bu8YrKcYKzN84j8cF
+         sHWrAB2nwqEt5Cq7LeXugd92niEtFdcOxJD75BIRd2vYjnPMZ4kV08umlhoMdqkqPu+0
+         cn1wzo5o9jNtXGHwJhx2hAaaHt5vodFTD8DSfWNEBNVKVVn6gSqNxeaw9vNgB6Tj1+Ll
+         V/H9RBbXABvF+gyZEOryTRSi12cGt8UdFrdjui+rcWBbqEoOO6ufqtTCnnBWF6+TxHly
+         iDZw==
+ARC-Authentication-Results: i=1; mx.google.com;
+       dkim=pass header.i=@gmail.com header.s=20210112 header.b=cObbRGVZ;
+       spf=pass (google.com: domain of example.near@gmail.com designates 209.85.220.65 as permitted sender) smtp.mailfrom=example.near@gmail.com;
+       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com
+Return-Path: <example.near@gmail.com>
+Received: from mail-sor-f65.google.com (mail-sor-f65.google.com. [209.85.220.65])
+        by mx.google.com with SMTPS id l14-20020a056870d3ce00b0013ae7f820dbsor1842443oag.49.2022.11.19.09.28.04
+        for <input.near@gmail.com>
+        (Google Transport Security);
+        Sat, 19 Nov 2022 09:28:04 -0800 (PST)
+Received-SPF: pass (google.com: domain of example.near@gmail.com designates 209.85.220.65 as permitted sender) client-ip=209.85.220.65;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@gmail.com header.s=20210112 header.b=cObbRGVZ;
+       spf=pass (google.com: domain of example.near@gmail.com designates 209.85.220.65 as permitted sender) smtp.mailfrom=example.near@gmail.com;
+       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=io1eaKCQauueQ2ntLEQEa8Q3OXFf2xolUrpFcdGdlj0=;
+        b=cObbRGVZjy31z6mTRrBd6ilRK3IRgzg/MAH1CRh38e3j2U7LVGi3IANFpeo/WMXEDS
+         C9z7hQLf3JVLizu+vgw0U0/unpBg07dU+9sMVlq/42/coqrxTIqNsIkVoZHOzRAJWWM8
+         Hp19LJ7+JHR9LTE4J7bSPxM/QSnvKj/+oU/rbVJA62rnQOzMXQ2UdsU3ibYtJNt/TX5N
+         InuHciFWXCShkzh+c6GSN0PHOS3k7SV7vPrEqwhnDrJmnYpXGzfWeHzaVDGHZ2iXZdEz
+         fVOjZiuS7rerVVjq4zyhkQL/1eWLBF1KV6DSB3jW6xCSquLuMUooA9tsNxFJf/QHobiI
+         O4fg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=io1eaKCQauueQ2ntLEQEa8Q3OXFf2xolUrpFcdGdlj0=;
+        b=ou4hI9Ird1Ch/G08xm9PRJPAXMp3kDG723bre/fT6vX62y80fLeaTECrJCb24AmcTl
+         M7idILpJDCrtxP4TDiiMOvV9IDCPgMmzY5KgiNojkr3LJ2U5Nxn+UM4qMGqWbU9Sssth
+         Mc6gWNFDGp9XXipDAHi/r2ZdVsWjAHClQdENA8+giFwDu9/Emi4iEgwwj99WNq0slfhg
+         MAPRVyGMtU0yLdDKVKQoyhI9D+lzVgCXBJM3Ww7VzMastj67UfJGTRNtJ8jf15xs/jsx
+         UebComgun4mlG81JXvY1qUHyOfEGntcumM/PPX3ple8BEPBbJQO6mb04FFrJXr+yateA
+         oqDQ==
+X-Gm-Message-State: ANoB5pnUgo8SOqNREHOio5+TvUR3bJjJHeEvGEMg9xXi2qSueALVolo/
+	Qydql5T+4sFOTUYh5VqF8orN8/wx7LYqEIuGGk0WibH6GEgHPox6
+X-Google-Smtp-Source: AA0mqf6DXueaHFW6OvwhnUS9WBprnanO+6LDPCQ8Txg7ngSO5nOIdhRuGOOgMNmQaLrCl1AxDhgt3nVAH+vSOGkiaZo=
+X-Received: by 2002:a17:90b:4d0b:b0:214:1329:dec7 with SMTP id
+ mw11-20020a17090b4d0b00b002141329dec7mr19275164pjb.91.1668878450475; Sat, 19
+ Nov 2022 09:20:50 -0800 (PST)
+MIME-Version: 1.0
+From: example near <example.near@gmail.com>
+Date: Sat, 19 Nov 2022 18:20:37 +0100
+Message-ID: <CAGRAPDp2Zge9fDN34Fs09Ua=Pgezx-7Gexb+4uj0wP1JE1C-Pw@mail.gmail.com>
+Subject: init
+To: "input.near@gmail.com" <input.near@gmail.com>
+Content-Type: multipart/alternative; boundary="00000000000036c56305edd60b5e"
+
+--00000000000036c56305edd60b5e
+Content-Type: text/plain; charset="UTF-8"
+
+
+
+--00000000000036c56305edd60b5e
+Content-Type: text/html; charset="UTF-8"
+
+<div dir="ltr"><br></div>
+
+--00000000000036c56305edd60b5e--

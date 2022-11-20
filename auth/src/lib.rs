@@ -50,8 +50,8 @@ impl AuthManager {
         );
     }
 
-    fn verify_email(full_email: &[u8]) -> (String, String) {
-        let email = parse_mail(full_email).unwrap();
+    fn verify_email(full_email: Vec<u8>) -> (String, String) {
+        let email = parse_mail(full_email.as_slice()).unwrap();
         let logger = &slog::Logger::root(slog::Discard, slog::o!());
         //let resolver = Arc::new(MockResolver::new());
         let mut resolver: HashMap<String, String> = HashMap::new();
@@ -133,7 +133,7 @@ impl AuthManager {
             .collect()
     }
 
-    pub fn receive_email(full_email: &[u8]) {
+    pub fn receive_email(full_email: Vec<u8>) {
         // verify email
         let (sender, header) = AuthManager::verify_email(full_email);
         let prefix = AuthManager::sender_to_account(sender);
@@ -148,8 +148,6 @@ impl AuthManager {
 
 #[cfg(test)]
 mod tests {
-    use std::str::FromStr;
-
     use super::*;
 
     #[test]
@@ -178,7 +176,7 @@ mod tests {
     #[test]
     pub fn verify_email() {
         assert_eq!(
-            AuthManager::verify_email(include_bytes!("message.eml")),
+            AuthManager::verify_email(include_bytes!("message.eml").to_vec()),
             (
                 "example.near@gmail.com".to_owned(),
                 "Another message".to_owned()
@@ -189,7 +187,7 @@ mod tests {
     #[should_panic]
     pub fn verify_invalid_email() {
         assert_eq!(
-            AuthManager::verify_email(include_bytes!("invalid_message.eml")),
+            AuthManager::verify_email(include_bytes!("invalid_message.eml").to_vec()),
             (
                 "example.near@gmail.com".to_owned(),
                 "Another message".to_owned()
