@@ -21,7 +21,7 @@ register_custom_getrandom!(always_fail);
 #[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
 pub struct AuthManager {}
 
-const MIN_STORAGE: Balance = 14_200_000_000_000_000_000_000_000; //11.1Ⓝ
+const MIN_STORAGE: Balance = 4_200_000_000_000_000_000_000_000; //11.1Ⓝ
 const WORKER_CODE: &[u8] = include_bytes!("worker.wasm");
 
 #[derive(Debug, PartialEq)]
